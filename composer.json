@@ -1,0 +1,25 @@
+{
+  "name": "tutto/datagrid-bundle",
+  "description": "This bundle provide build data grids",
+  "keywords": ["util"],
+  "type": "symfony-bundle",
+  "license": ["MIT"],
+  "authors": [{
+    "name": "Krzysztof Januś",
+    "email": "fluke.kuczwa@gmail.com"
+  }],
+  "require": {
+    "symfony/framework-bundle": "~2.0"
+  },
+  "autoload": {
+    "psr-0": {
+      "Tutto\\Bundle\\DataGridBundle": ""
+    }
+  },
+  "target-dir": "Tutto/Bundle/DataGridBundle",
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    }
+  }
+}
