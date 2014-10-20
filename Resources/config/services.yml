@@ -1,4 +1,7 @@
 services:
+  property_accessor:
+    class: Tutto\Bundle\UtilBundle\Logic\PropertyAccessor
+
   tutto.datagrid.helpers.rows:
     class: Tutto\Bundle\DataGridBundle\DataGrid\Helper\RowsHelper
 

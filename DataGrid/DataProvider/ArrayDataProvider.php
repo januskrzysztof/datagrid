@@ -23,10 +23,15 @@ class ArrayDataProvider extends AbstractDataProvider {
      * @return array
      */
     public function getResult() {
-        $limit   = $this->getLimit();
-        $offset  = ($this->getPage()-1)*$limit;
+        $limit  = $this->getLimit();
+        $offset = ($this->getPage()-1)*$limit;
+        $result = array_slice($this->result, $offset, $limit);
 
-        return array_slice($this->result, $offset, $limit);
+        uasort($result, function ($a, $b) {
+            return strnatcmp($a[$this->getSort()], $b[$this->getSort()]);
+        });
+
+        return $result;
     }
 
     /**
@@ -40,5 +45,15 @@ class ArrayDataProvider extends AbstractDataProvider {
      */
     public function count() {
         return count($this->result);
+    }
+
+    public function setOrder($order) {
+        if ($order == SORT_ASC) {
+            $order = 'asc';
+        } elseif ($order == SORT_DESC) {
+            $order = 'desc';
+        }
+
+        parent::setOrder($order);
     }
 }
