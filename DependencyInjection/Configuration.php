@@ -19,10 +19,12 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('tutto_data_grid');
-
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->scalarNode('template')
+                    ->defaultValue('@TuttoDataGrid/datagrid.html.twig')
+                    ->end()
+            ->end();
 
         return $treeBuilder;
     }

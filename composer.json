@@ -9,8 +9,15 @@
     "email": "fluke.kuczwa@gmail.com"
   }],
   "require": {
-    "symfony/framework-bundle": "~2.0"
+    "symfony/framework-bundle": "~2.0",
+    "tutto/xhtml-bundle": "1.*"
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/januskrzysztof/xhtml.git"
+    }
+  ],
   "autoload": {
     "psr-0": {
       "Tutto\\Bundle\\DataGridBundle": ""

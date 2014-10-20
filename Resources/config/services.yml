@@ -1,0 +1,16 @@
+services:
+  tutto.datagrid.helpers.rows:
+    class: Tutto\Bundle\DataGridBundle\DataGrid\Helper\RowsHelper
+
+  tutto.datagrid.helpers.labels:
+    class: Tutto\Bundle\DataGridBundle\DataGrid\Helper\LabelsHelper
+
+  tutto.datagrid:
+    class: Tutto\Bundle\DataGridBundle\DataGrid\DataGrid
+    calls:
+      - [addHelper, ["@tutto.datagrid.helpers.rows"]]
+      - [addHelper, ["@tutto.datagrid.helpers.labels"]]
+
+  tutto.datagrid.factory:
+    class: Tutto\Bundle\DataGridBundle\DataGrid\DataGridFactory
+    arguments: ["@tutto.datagrid", "@templating", "@form.factory", "@property_accessor", "@service_container"]
