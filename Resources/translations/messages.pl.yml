@@ -1,1 +1,3 @@
-show_result: Pokazuje %from% do %to% na %count% rekordów
+datagrid:
+  search: Szukaj
+  show_result: Pokazuje %from% do %to% na %count% rekordów

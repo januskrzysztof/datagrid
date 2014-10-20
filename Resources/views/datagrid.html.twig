@@ -1,8 +1,7 @@
 {% block datagrid_body %}
     <form method="post" action="{{ datagrid.router.generate({"page": 1}) }}">
         {{ form_row(datagrid.form) }}
-        <input type="text" name="filters_type[lastname]" value="asd">
-        <button>asd</button>
+        <button class="btn">{{ "datagrid.search"|trans }}</button>
     </form>
 
     <table>
@@ -28,7 +27,7 @@
     {% set from = from < 1 ? 1 : from+1 %}
     {% set to   = from+datagrid.pagination.getLimit()-1 %}
 
-    {{ "show_result"|trans({"%from%": from, "%to%": to, "%count%": datagrid.pagination.count()}) }}
+    {{ "datagrid.show_result"|trans({"%from%": from, "%to%": to, "%count%": datagrid.pagination.count()}) }}
 
     {% include '@TuttoDataGrid/pagination.html.twig' with {'pagination': datagrid.pagination, 'router': datagrid.router} %}
 {% endblock datagrid_body %}
