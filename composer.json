@@ -10,12 +10,17 @@
   }],
   "require": {
     "symfony/framework-bundle": "~2.0",
-    "tutto/xhtml-bundle": "1.*"
+    "tutto/xhtml-bundle": "1.*",
+    "tutto/util-bundle": "1.*"
   },
   "repositories": [
     {
       "type": "vcs",
       "url": "https://github.com/januskrzysztof/xhtml.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/januskrzysztof/util.git"
     }
   ],
   "autoload": {

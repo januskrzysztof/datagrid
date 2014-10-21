@@ -1,13 +1,17 @@
 <?php
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column;
+
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\AbstractDecorator;
+use BadMethodCallException;
+use Tutto\Bundle\DataGridBundle\Exceptions\Decorator\DecoratorException;
+use Tutto\Bundle\UtilBundle\Logic\Attributes;
 
 /**
  * Class AbstractColumn
  * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column
  */
-class AbstractColumn {
+abstract class AbstractColumn {
     private $name;
 
     private $label;
@@ -16,7 +20,7 @@ class AbstractColumn {
 
     private $isVisible = true;
 
-    private $isSotrable = false;
+    private $isSortable = false;
 
     private $decorator;
 
@@ -25,24 +29,51 @@ class AbstractColumn {
     private $postAccessValueEvents = [];
 
     /**
-     * @param AbstractDecorator $decorator
-     * @param string $name
-     * @param null $label
-     * @param null $propertyPath
+     * @var Attributes
      */
-    public function __construct(AbstractDecorator $decorator, $name, $label = null, $propertyPath = null) {
-        if ($label === null) {
-            $label = $name;
+    private $attributes;
+
+    /**
+     * @param string $name
+     * @param array $options
+     */
+    public function __construct($name, array $options = []) {
+        if (!is_string($name)) {
+            throw new DecoratorException('Name must be a string.');
         }
-        if ($propertyPath === null) {
-            $propertyPath = $name;
+        if (!isset($options['propertyPath'])) {
+            $options['propertyPath'] = $name;
+        }
+        if (!isset($options['label'])) {
+            $options['label'] = $name;
+        }
+        if (!isset($options['attributes'])) {
+            $this->attributes = new Attributes();
+        } else {
+            $attributes = $options['attributes'];
+            if (is_array($attributes)) {
+                $options['attributes'] = new Attributes($attributes);
+            }
         }
 
-        $this->name         = $name;
-        $this->label        = $label;
-        $this->propertyPath = $propertyPath;
-        $this->decorator    = $decorator;
+        foreach ($options as $key => $value) {
+            $setMethod = 'set'.ucfirst($key);
+            $addMethod = 'add'.ucfirst($key);
+
+            if (method_exists($this, $setMethod)) {
+                $this->$setMethod($value);
+            } elseif(method_exists($this, $addMethod)) {
+                $this->$addMethod($value);
+            } else {
+                throw new BadMethodCallException(sprintf("Unknown property '%s'.", $key));
+            }
+        }
     }
+
+    /**
+     * @return AbstractDecorator
+     */
+    abstract protected function initDecorator();
 
     /**
      * @param boolean $isVisible
@@ -59,17 +90,17 @@ class AbstractColumn {
     }
 
     /**
-     * @param boolean $isSotrable
+     * @param boolean $isSortable
      */
-    public function setIsSotrable($isSotrable) {
-        $this->isSotrable = (boolean) $isSotrable;
+    public function setIsSortable($isSortable) {
+        $this->isSortable = (boolean) $isSortable;
     }
 
     /**
      * @return bool
      */
     public function getIsSortable() {
-        return $this->isSotrable;
+        return $this->isSortable;
     }
 
     /**
@@ -132,6 +163,10 @@ class AbstractColumn {
      * @return AbstractDecorator
      */
     public function getDecorator() {
+        if ($this->decorator === null) {
+            $this->decorator = $this->initDecorator();
+        }
+
         return $this->decorator;
     }
 
@@ -140,7 +175,7 @@ class AbstractColumn {
      * @param string $placement
      */
     public function addDecorator(AbstractDecorator $decorator, $placement = AbstractDecorator::PREPEND) {
-        $this->decorator->addDecorator($decorator, $placement);
+        $this->getDecorator()->addDecorator($decorator, $placement);
     }
 
     /**
@@ -155,5 +190,13 @@ class AbstractColumn {
      */
     public function getPostAccessValueEvents() {
         return $this->postAccessValueEvents;
+    }
+
+    public function setAttributes(Attributes $attributes) {
+        $this->attributes = $attributes;
+    }
+
+    public function getAttributes() {
+        return $this->attributes;
     }
 }

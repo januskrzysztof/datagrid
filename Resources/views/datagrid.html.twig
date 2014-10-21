@@ -16,7 +16,7 @@
         {% for row in datagrid.rows.getRows() %}
             <tr>
             {% for cell in row.getCells() %}
-                <td>{{ xhtmlRaw(cell) }}</td>
+                <td {{ cell.getColumn().getAttributes()|raw }}>{{ xhtmlRaw(cell.getXhtml()) }}</td>
             {% endfor %}
             </tr>
         {% endfor %}

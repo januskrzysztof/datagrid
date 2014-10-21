@@ -9,11 +9,7 @@ use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\ValueDecorator;
  * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column
  */
 class Column extends AbstractColumn {
-    /**
-     * @param string $name
-     */
-    public function __construct($name) {
-        parent::__construct(new ValueDecorator(), $name);
+    protected function initDecorator() {
+        return new ValueDecorator();
     }
-
 }

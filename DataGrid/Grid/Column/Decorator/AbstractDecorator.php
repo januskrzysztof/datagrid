@@ -2,6 +2,7 @@
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator;
 
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Event;
 use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
 
 /**
@@ -27,16 +28,16 @@ abstract class AbstractDecorator {
     }
 
     /**
-     * @param mixed $value
+     * @param Event $event
      * @return AbstractTag
      */
-    abstract public function decorate($value = null);
+    abstract public function decorate(Event $event);
 
     /**
      * @param AbstractDecorator $decorator
      * @param string $placement
      */
-    public function addDecorator(AbstractDecorator $decorator, $placement = self::APPEND) {
+    public function addDecorator(AbstractDecorator $decorator, $placement = self::PREPEND) {
         $this->decorators[] = [$placement, $decorator];
     }
 

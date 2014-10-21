@@ -10,8 +10,8 @@ use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
 class Row {
     private $cells = [];
 
-    public function addCell(AbstractTag $tag) {
-        $this->cells[] = $tag;
+    public function addCell(Cell $cell) {
+        $this->cells[] = $cell;
     }
 
     public function getCells() {

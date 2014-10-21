@@ -2,6 +2,7 @@
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator;
 
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Event;
 use Tutto\Bundle\DataGridBundle\Exceptions\Decorator\CallableException;
 use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
 
@@ -29,10 +30,10 @@ class CallableDecorator extends AbstractDecorator {
     }
 
     /**
-     * @param mixed $value
+     * @param Event $event
      * @return AbstractTag
      */
-    public function decorate($value = null) {
-        return call_user_func_array($this->callable, [$value]);
+    public function decorate(Event $event) {
+        return call_user_func_array($this->callable, [$event]);
     }
 }

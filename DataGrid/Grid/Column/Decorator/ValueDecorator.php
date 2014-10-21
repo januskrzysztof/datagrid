@@ -2,6 +2,7 @@
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator;
 
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Event;
 use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
 use Tutto\Bundle\XhtmlBundle\Xhtml\Text;
 
@@ -11,10 +12,10 @@ use Tutto\Bundle\XhtmlBundle\Xhtml\Text;
  */
 class ValueDecorator extends AbstractDecorator {
     /**
-     * @param mixed $value
-     * @return AbstractTag
+     * @param Event $event
+     * @return Text
      */
-    public function decorate($value = null) {
-        return new Text($value);
+    public function decorate(Event $event) {
+        return new Text($event->getValue());
     }
 }

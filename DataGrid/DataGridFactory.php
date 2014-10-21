@@ -14,6 +14,7 @@ use Symfony\Component\PropertyAccess\Exception\InvalidPropertyPathException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 use Tutto\Bundle\DataGridBundle\DataGrid\DataProvider\DataProviderInterface;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Cell;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\AbstractColumn;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\AbstractDecorator;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Event;
@@ -25,8 +26,10 @@ use Tutto\Bundle\DataGridBundle\DataGrid\Helper\LabelsHelper;
 use Tutto\Bundle\DataGridBundle\DataGrid\Helper\PaginationHelper;
 use Tutto\Bundle\DataGridBundle\DataGrid\Helper\RouterHelper;
 use Tutto\Bundle\DataGridBundle\DataGrid\Helper\RowsHelper;
+use Tutto\Bundle\DataGridBundle\Exceptions\Decorator\DecoratorException;
 use Tutto\Bundle\UtilBundle\Logic\PropertyAccessor;
 use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\GridBuilderInterface;
 use BadMethodCallException;
 
 /**
@@ -80,14 +83,14 @@ class DataGridFactory {
     }
 
     /**
-     * @param GridInterface $grid
+     * @param GridBuilderInterface $gridBuilder
      * @param DataProviderInterface $dataProvider
      * @param AbstractFiltersType $filters
      * @param Request $request
      * @param bool $template
      * @return array
      */
-    public function createResponse(GridInterface $grid, DataProviderInterface $dataProvider, AbstractFiltersType $filters, Request $request = null, $template = false) {
+    public function createResponse(GridBuilderInterface $gridBuilder, DataProviderInterface $dataProvider, AbstractFiltersType $filters, Request $request = null, $template = false) {
         /** Set request if not passed */
         if ($request === null) {
             $request = $this->container->get('request');
@@ -96,10 +99,7 @@ class DataGridFactory {
         /** @var Session $session */
         $session = $request->getSession();
 
-        /** Prepare grid definition */
-        $gridBuilder = new GridBuilder($this->container);
-        $grid->appendSettings($gridBuilder);
-
+        /** @var AbstractColumn $column */
         /** Set grid labels to helper */
         foreach ($gridBuilder->getColumns() as $column) {
             $this->dataGrid->labels->addLabel($column->getLabel());
@@ -139,7 +139,7 @@ class DataGridFactory {
 
                     $this->callPostAccessValueEvents($column, $event);
 
-                    $row->addCell($this->decorate($column->getDecorator(), $event->getValue()));
+                    $row->addCell(new Cell($this->decorate($column->getDecorator(), $event), $column));
                 }
                 $this->dataGrid->rows->addRow($row);
             }
@@ -194,11 +194,15 @@ class DataGridFactory {
 
     /**
      * @param AbstractDecorator $decorator
-     * @param null|mixed $value
+     * @param Event $event
      * @return AbstractTag
      */
-    private function decorate(AbstractDecorator $decorator, $value = null) {
-        $xhtml = $decorator->decorate($value);
+    private function decorate(AbstractDecorator $decorator, Event $event) {
+        $xhtml = $decorator->decorate($event);
+
+        if (!$xhtml instanceof AbstractTag) {
+            throw new DecoratorException(sprintf("'AbstractTag' was not returned from decorator: '%s'", get_class($decorator)));
+        }
 
         /**
          * @var string $placement
@@ -206,10 +210,10 @@ class DataGridFactory {
          */
         foreach ($decorator->getDecorators() as list($placement, $subDecorator)) {
             if ($placement === AbstractDecorator::APPEND) {
-                $xhtml->addChild($this->decorate($subDecorator, $value));
+                $xhtml->addChild($this->decorate($subDecorator, $event));
             } elseif ($placement === AbstractDecorator::PREPEND) {
                 $tmp = $xhtml;
-                $xhtml = $this->decorate($subDecorator, $value);
+                $xhtml = $this->decorate($subDecorator, $event);
                 $xhtml->addChild($tmp);
             }
         }
