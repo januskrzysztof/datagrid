@@ -19,14 +19,7 @@
     }
   ],
   "autoload": {
-    "psr-0": {
-      "Tutto\\Bundle\\DataGridBundle": ""
-    }
+    "psr-0": {"Tutto\\Bundle\\DataGridBundle": ""}
   },
-  "target-dir": "Tutto/Bundle/DataGridBundle",
-  "extra": {
-    "branch-alias": {
-      "dev-master": "1.0"
-    }
-  }
+  "target-dir": "Tutto/Bundle/DataGridBundle"
 }
