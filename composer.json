@@ -10,8 +10,7 @@
   }],
   "require": {
     "symfony/framework-bundle": "~2.0",
-    "tutto/xhtml-bundle": "dev-master",
-    "tutto/util-bundle": "dev-master"
+    "tutto/xhtml-bundle": "dev-master"
   },
   "repositories": [
     {
