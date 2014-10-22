@@ -2,7 +2,7 @@
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\Base;
 
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\BaseGridBuilder;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\BaseBuilder;
 
 /**
  * Interface AppendSettingsInterface
@@ -10,7 +10,7 @@ use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\BaseGridBuilder;
  */
 interface AppendSettingsInterface {
     /**
-     * @param BaseGridBuilder $builder
+     * @param BaseBuilder $builder
      */
-    public function appendSettings(BaseGridBuilder $builder);
+    public function appendSettings(BaseBuilder $builder);
 }

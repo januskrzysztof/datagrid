@@ -2,13 +2,13 @@
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\AbstractColumn;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\Annotation;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\Annotation\Column\Column as ColumnAnnotation;
 use ReflectionClass;
 use ReflectionObject;
+use Tutto\Bundle\UtilBundle\Exceptions\ClassNotFoundException;
 
 /**
  * Class AnnotationBuilder
@@ -16,45 +16,46 @@ use ReflectionObject;
  */
 class AnnotationBuilder extends AbstractGridBuilder {
     /**
+     * @var Reader
+     */
+    private $reader;
+
+    /**
      * @param Reader $reader
-     * @param mixed $class
      * @param array $attributes
      */
-    public function __construct(Reader $reader, $class, $attributes = []) {
+    public function __construct(Reader $reader, $attributes = []) {
         parent::__construct($attributes);
+        $this->reader = $reader;
+    }
 
+    /**
+     * @param mixed $class
+     * @return $this
+     * @throws ClassNotFoundException
+     */
+    public function load($class) {
         if (class_exists($class)) {
-            $this->loadAnnotation($reader, new ReflectionClass($class));
+            $reflection = is_object($class) ? new ReflectionObject($class) : new ReflectionClass($class);
+            $columns    = $this->loadColumns($this->reader, $reflection);
 
-            $reflect = new ReflectionClass($class);
-            foreach ($reflect->getProperties() as $property) {
-//                /** @var Annotation\Column $columnAnnot */
-//                $columnAnnot = $reader->getPropertyAnnotation($property, Annotation\Column\Column::class);
-//                if ($columnAnnot !== null) {
-//                    if ($columnAnnot->getName() === null) {
-//                        $columnAnnot->setName($property->getName());
-//                    }
-//
-//                    $columnClass = $columnAnnot->getAliasName();
-//                    $column = new $columnClass($columnAnnot->getName());
-//
-//                    var_dump($columnAnnot->getAttributes());
-//
-//                    $this->addColumn($column);
-//                }
+            foreach ($columns as $column) {
+                $this->addColumn($column);
             }
 
-
+            return $this;
         } else {
-            throw new \LogicException("Class: '{$class}' not exists.");
+            throw new ClassNotFoundException(get_class($class));
         }
     }
 
     /**
      * @param Reader $reader
      * @param ReflectionClass $reflection
+     * @return array
      */
-    public function loadAnnotation(Reader $reader, ReflectionClass $reflection) {
+    public static function loadColumns(Reader $reader, ReflectionClass $reflection) {
+        $columns = [];
         foreach ($reflection->getProperties() as $property) {
             /** @var ColumnAnnotation $annotation */
             $annotation = $reader->getPropertyAnnotation($property, ColumnAnnotation::class);
@@ -65,21 +66,23 @@ class AnnotationBuilder extends AbstractGridBuilder {
                 }
 
                 $class   = $annotation->getAliasName();
-                $options = $this->loadColumnOptions($annotation);
+                $options = self::loadColumnOptions($annotation);
 
                 /** @var AbstractColumn $column */
                 $column = new $class($annotation->getName(), $options);
 
-                $this->addColumn($column);
+                $columns[] = $column;
             }
         }
+
+        return $columns;
     }
 
     /**
      * @param ColumnAnnotation $column
      * @return array
      */
-    protected function loadColumnOptions(ColumnAnnotation $column) {
+    protected static function loadColumnOptions(ColumnAnnotation $column) {
         $options    = [];
         $reflection = new ReflectionObject($column);
         foreach ($reflection->getProperties() as $property) {

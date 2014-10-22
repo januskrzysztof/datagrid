@@ -11,7 +11,8 @@
   "require": {
     "symfony/framework-bundle": "~2.0",
     "tutto/xhtml-bundle": "1.*",
-    "tutto/util-bundle": "1.*"
+    "tutto/util-bundle": "1.*",
+    "jms/di-extra-bundle": "1.4-dev"
   },
   "repositories": [
     {
@@ -21,6 +22,10 @@
     {
       "type": "vcs",
       "url": "https://github.com/januskrzysztof/util.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/schmittjoh/JMSDiExtraBundle.git"
     }
   ],
   "autoload": {
