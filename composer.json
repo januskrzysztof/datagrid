@@ -4,6 +4,7 @@
   "description": "This bundle provide build data grids",
   "keywords": ["util"],
   "license": ["MIT"],
+  "minimum-stability": "dev",
   "authors": [{
     "name": "Krzysztof Januś",
     "email": "fluke.kuczwa@gmail.com"
