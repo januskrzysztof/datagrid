@@ -9,7 +9,8 @@
     "email": "fluke.kuczwa@gmail.com"
   }],
   "require": {
-    "symfony/framework-bundle": "~2.0"
+    "symfony/framework-bundle": "~2.0",
+    "tutto/xhtml-bundle": "dev-master"
   },
   "repositories": [
     {
