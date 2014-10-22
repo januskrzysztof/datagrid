@@ -1,8 +1,8 @@
 {
   "name": "tutto/datagrid-bundle",
+  "type": "symfony-bundle",
   "description": "This bundle provide build data grids",
   "keywords": ["util"],
-  "type": "symfony-bundle",
   "license": ["MIT"],
   "authors": [{
     "name": "Krzysztof Januś",
