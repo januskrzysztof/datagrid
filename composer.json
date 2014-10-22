@@ -15,11 +15,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/januskrzysztof/xhtml.git"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/januskrzysztof/util.git"
+      "url": "https://github.com/januskrzysztof/xhtml"
     }
   ],
   "autoload": {
