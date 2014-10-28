@@ -8,11 +8,14 @@ services:
   tutto.datagrid.helpers.labels:
     class: Tutto\Bundle\DataGridBundle\DataGrid\Helper\LabelsHelper
 
+  tutto.datagrid.helpers.columns:
+    class: Tutto\Bundle\DataGridBundle\DataGrid\Helper\ColumnsHelper
+
   tutto.datagrid:
     class: Tutto\Bundle\DataGridBundle\DataGrid\DataGrid
     calls:
       - [addHelper, ["@tutto.datagrid.helpers.rows"]]
-      - [addHelper, ["@tutto.datagrid.helpers.labels"]]
+      - [addHelper, ["@tutto.datagrid.helpers.columns"]]
 
   tutto.datagrid.factory:
     class: Tutto\Bundle\DataGridBundle\DataGrid\DataGridFactory

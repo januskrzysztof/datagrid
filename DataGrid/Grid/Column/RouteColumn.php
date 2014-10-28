@@ -18,6 +18,16 @@ class RouteColumn extends AbstractColumn {
     private $routeDefinition;
 
     /**
+     * @param string $name
+     * @param array $options
+     * @param RouteDefinition $routeDefinition
+     */
+    public function __construct($name, array $options = [], RouteDefinition $routeDefinition = null) {
+        parent::__construct($name, $options);
+        $this->routeDefinition = $routeDefinition;
+    }
+
+    /**
      * @return RouteDecorator
      */
     protected function initDecorator() {

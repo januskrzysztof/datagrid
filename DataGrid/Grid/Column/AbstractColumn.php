@@ -3,29 +3,56 @@
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column;
 
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\AbstractDecorator;
-use BadMethodCallException;
+use Tutto\Bundle\DataGridBundle\DataGrid\DataProvider\DataProviderInterface;
 use Tutto\Bundle\DataGridBundle\Exceptions\Decorator\DecoratorException;
 use Tutto\Bundle\UtilBundle\Logic\Attributes;
+use BadMethodCallException;
 
 /**
  * Class AbstractColumn
  * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column
  */
 abstract class AbstractColumn {
+    /**
+     * @var string
+     */
     private $name;
 
+    /**
+     * @var string
+     */
     private $label;
 
+    /**
+     * @var string
+     */
     private $propertyPath;
 
+    /**
+     * @var bool
+     */
     private $isVisible = true;
 
+    /**
+     * @var bool
+     */
     private $isSortable = false;
+
+    /**
+     * @var string
+     */
+    private $sort = DataProviderInterface::SORT;
 
     private $decorator;
 
+    /**
+     * @var mixed
+     */
     private $staticValue;
 
+    /**
+     * @var array
+     */
     private $postAccessValueEvents = [];
 
     /**
@@ -54,6 +81,9 @@ abstract class AbstractColumn {
             if (is_array($attributes)) {
                 $options['attributes'] = new Attributes($attributes);
             }
+        }
+        if (!isset($options['sort'])) {
+            $options['sort'] = $options['propertyPath'];
         }
 
         foreach ($options as $key => $value) {
@@ -91,9 +121,30 @@ abstract class AbstractColumn {
 
     /**
      * @param boolean $isSortable
+     * @param null|string $sort
      */
-    public function setIsSortable($isSortable) {
+    public function setIsSortable($isSortable, $sort = null) {
         $this->isSortable = (boolean) $isSortable;
+
+        if ($sort === null) {
+            $sort = $this->getName();
+        }
+
+        $this->setSort($sort);
+    }
+
+    /**
+     * @return string
+     */
+    public function getSort() {
+        return $this->sort;
+    }
+
+    /**
+     * @param string $sort
+     */
+    public function setSort($sort) {
+        $this->sort = $sort;
     }
 
     /**
@@ -192,10 +243,16 @@ abstract class AbstractColumn {
         return $this->postAccessValueEvents;
     }
 
+    /**
+     * @param Attributes $attributes
+     */
     public function setAttributes(Attributes $attributes) {
         $this->attributes = $attributes;
     }
 
+    /**
+     * @return Attributes
+     */
     public function getAttributes() {
         return $this->attributes;
     }

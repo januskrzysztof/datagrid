@@ -15,6 +15,9 @@ class CustomColumn extends AbstractColumn {
      */
     private $decorator;
 
+    /**
+     * @var bool
+     */
     private $useValueDecorator = true;
 
     /**

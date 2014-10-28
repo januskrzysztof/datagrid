@@ -4,6 +4,7 @@ namespace Tutto\Bundle\DataGridBundle\Configuration;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route as BaseRoute;
 use BadMethodCallException;
+use Tutto\Bundle\DataGridBundle\DataGrid\DataGridFactory;
 use Tutto\Bundle\DataGridBundle\DataGrid\DataProvider\DataProviderInterface;
 
 /**
@@ -22,22 +23,29 @@ class Route extends BaseRoute {
      */
     public function __construct(array $data) {
         parent::__construct($data);
-        $path = rtrim($this->getPath(), '/').'/{page}/{limit}/{sort}/{order}';
+        $path = rtrim($this->getPath(), '/').'/';
+        $path.= implode('/', [
+            '{'.DataGridFactory::PAGE_NAME.'}',
+            '{'.DataGridFactory::LIMIT_NAME.'}',
+            '{'.DataGridFactory::SORT_NAME.'}',
+            '{'.DataGridFactory::ORDER_NAME.'}'
+        ]);
+
         $requirements = array_merge(
             [
-                'page'  => '\d+',
-                'limit' => '\d+',
-                'order' => '('.DataProviderInterface::DESC.'|'.DataProviderInterface::ASC.')'
+                DataGridFactory::PAGE_NAME  => '\d+',
+                DataGridFactory::LIMIT_NAME => '\d+',
+                DataGridFactory::ORDER_NAME => '('.DataProviderInterface::DESC.'|'.DataProviderInterface::ASC.')'
             ],
             $this->getRequirements()
         );
 
         $defaults = array_merge(
             [
-                'page'  => 1,
-                'limit' => 30,
-                'sort'  => DataProviderInterface::SORT,
-                'order' => DataProviderInterface::DESC
+                DataGridFactory::PAGE_NAME  => 1,
+                DataGridFactory::LIMIT_NAME => 30,
+                DataGridFactory::SORT_NAME  => DataProviderInterface::SORT,
+                DataGridFactory::ORDER_NAME => DataProviderInterface::DESC
             ],
             $this->getDefaults()
         );

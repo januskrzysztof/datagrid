@@ -1,5 +1,11 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    {{ block('datagrid_body') }}
+{% endblock %}
+
 {% block datagrid_body %}
-    <form method="post" action="{{ datagrid.router.generate({"page": 1}) }}">
+    <form method="post" action="{{ datagrid.router.generate({"_page": 1}) }}">
         {{ form_row(datagrid.form) }}
         <button class="btn">{{ "datagrid.search"|trans }}</button>
     </form>
@@ -7,8 +13,14 @@
     <table>
         <thead>
         <tr>
-        {% for label in datagrid.labels.getLabels() %}
-            <th>{{ label|raw }}</th>
+        {% for column in datagrid.columns.getColumns() %}
+            <th>
+                {% if column.isSortable() %}
+                    <a href="{{ datagrid.router.generate({"_sort": column.getSort()}) }}">{{ column.getLabel()|trans|raw }}</a>
+                {% else %}
+                    {{ column.getLabel()|trans|raw }}
+                {% endif %}
+            </th>
         {% endfor %}
         </tr>
         </thead>

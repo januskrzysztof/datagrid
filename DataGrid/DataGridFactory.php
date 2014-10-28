@@ -37,6 +37,11 @@ use BadMethodCallException;
  * @package Tutto\Bundle\DataGridBundle\DataGrid
  */
 class DataGridFactory {
+    const SORT_NAME  = '_sort';
+    const PAGE_NAME  = '_page';
+    const ORDER_NAME = '_order';
+    const LIMIT_NAME = '_limit';
+
     /**
      * @var ContainerInterface
      */
@@ -102,13 +107,13 @@ class DataGridFactory {
         /** @var AbstractColumn $column */
         /** Set grid labels to helper */
         foreach ($gridBuilder->getColumns() as $column) {
-            $this->dataGrid->labels->addLabel($column->getLabel());
+            $this->dataGrid->columns->addColumn($column);
         }
 
-        $dataProvider->setLimit($request->get('limit', 30));
-        $dataProvider->setPage($request->get('page', 1));
-        $dataProvider->setSort($request->get('sort', DataProviderInterface::SORT));
-        $dataProvider->setOrder($request->get('order', DataProviderInterface::DESC));
+        $dataProvider->setLimit($request->get(self::LIMIT_NAME, 30));
+        $dataProvider->setPage($request->get(self::PAGE_NAME, 1));
+        $dataProvider->setSort($request->get(self::SORT_NAME, DataProviderInterface::SORT));
+        $dataProvider->setOrder($request->get(self::ORDER_NAME, DataProviderInterface::DESC));
 
         if ($session->has($filters->getName())) {
             $data = $session->get($filters->getName());

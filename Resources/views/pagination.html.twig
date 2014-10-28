@@ -1,18 +1,18 @@
 <ul class="pagination">
     <li class="prev {{ pagination.getPrevious() == pagination.getPage() ? 'disabled' : '' }}">
-        <a href="{{ router.generate({"page": pagination.getPrevious()}) }}">
+        <a href="{{ router.generate({"_page": pagination.getPrevious()}) }}">
             <i class="fa fa-chevron-left">prev</i>
         </a>
     </li>
 
     {% for page in 1..pagination.getPages() %}
         <li {{ page == pagination.getPage() ? 'class="active"' : '' }}>
-            <a href="{{ router.generate({'page': page}) }}">{{ page }}</a>
+            <a href="{{ router.generate({'_page': page}) }}">{{ page }}</a>
         </li>
     {% endfor %}
 
     <li class="next {{ pagination.getNext() == pagination.getPage() ? 'disabled' : '' }}">
-        <a href="{{ router.generate({'page': pagination.getNext()}) }}">
+        <a href="{{ router.generate({'_page': pagination.getNext()}) }}">
             <i class="fa fa-chevron-right">next</i>
         </a>
     </li>
