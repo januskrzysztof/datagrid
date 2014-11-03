@@ -11,7 +11,7 @@ use Tutto\Bundle\UtilBundle\Logic\Attributes as BaseAttributes;
  * Class AbstractBuilder
  * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder
  */
-abstract class AbstractGridBuilder implements GridBuilderInterface {
+abstract class AbstractGridBuilder {
     /**
      * @var AbstractColumn[]
      */
@@ -35,6 +35,11 @@ abstract class AbstractGridBuilder implements GridBuilderInterface {
     }
 
     /**
+     * @return void
+     */
+    abstract public function build();
+
+    /**
      * @param AbstractColumn $column
      */
     public function addColumn(AbstractColumn $column) {
@@ -42,7 +47,7 @@ abstract class AbstractGridBuilder implements GridBuilderInterface {
     }
 
     /**
-     * @return AbstractColumn
+     * @return AbstractColumn[]
      */
     public function getColumns() {
         return $this->columns;

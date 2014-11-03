@@ -1,34 +1,54 @@
 <?php
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column;
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\AbstractDecorator;
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\CallableDecorator;
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\XhtmlTagDecorator;
+
+
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Event;
-use Tutto\Bundle\UtilBundle\Logic\RouteDefinition;
+use Tutto\Bundle\DataGridBundle\Exceptions\ColumnException;
+use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
 use Tutto\Bundle\XhtmlBundle\Xhtml\Tag;
 
 /**
  * Class IconsColumn
  * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column
  */
-class IconsColumn extends RouteColumn {
+class IconsColumn extends AbstractColumn {
+    const VISIBILITY_MD = 'visible-md visible-lg hidden-sm hidden-xs';
+    const VISIBILITY_XS = 'visible-xs visible-sm hidden-md hidden-lg';
+
     /**
      * @var IconColumn[]
      */
     private $icons = [];
 
     /**
+     * @var string
+     */
+    private $visibility = self::VISIBILITY_MD;
+
+    /**
      * @param string $name
      * @param array $options
-     * @param RouteDefinition $routeDefinition
+     * @throws ColumnException
      */
-    public function __construct($name = 'actions', array $options = [], RouteDefinition $routeDefinition = null) {
-        if (!isset($options['propertyPath'])) {
-            $options['propertyPath'] = 'id';
-        }
+    public function __construct($name = 'actions', $visibility = self::VISIBILITY_MD, array $options = []) {
+        $options['propertyPath'] = false;
+        $options['visibility'] = $visibility;
+        parent::__construct($name, $options);
+    }
 
-        parent::__construct($name, $options, $routeDefinition);
+    /**
+     * @return string
+     */
+    public function getVisibility() {
+        return $this->visibility;
+    }
+
+    /**
+     * @param string $visibility
+     */
+    public function setVisibility($visibility) {
+        $this->visibility = $visibility;
     }
 
     /**
@@ -46,18 +66,16 @@ class IconsColumn extends RouteColumn {
     }
 
     /**
-     * @return CallableDecorator
+     * @param Event $event
+     * @return AbstractTag
      */
-    protected function initDecorator() {
-        $decorator = new XhtmlTagDecorator('div', $this->getAttributes()->all());
-        foreach ($this->getIcons() as $icon) {
-            if ($icon->getRouteDefinition() === null) {
-                $icon->setRouteDefinition($this->getRouteDefinition());
-            }
+    public function decorate(Event $event) {
+        $xhtml = new Tag('div', ['class' => $this->getVisibility()]);
 
-            $decorator->addDecorator($icon->getDecorator(), AbstractDecorator::APPEND);
+        foreach ($this->getIcons() as $icon) {
+            $xhtml->addChild($icon->decorate($event));
         }
 
-        return $decorator;
+        return $xhtml;
     }
 }

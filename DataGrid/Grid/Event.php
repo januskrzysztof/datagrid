@@ -2,6 +2,8 @@
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid;
 
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\AbstractColumn;
+
 /**
  * Class Event
  * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid
@@ -10,31 +12,41 @@ class Event {
     /**
      * @var mixed
      */
-    private $data;
+    private $value;
 
     /**
      * @var mixed
      */
-    private $value;
+    private $data;
 
     /**
-     * @var array
+     * @var AbstractColumn
      */
-    private $attributes = [];
+    private $column;
 
     /**
-     * @param $data
-     * @param $value
-     * @param array $attributes
+     * @param mixed $value
+     * @param mixed $data
+     * @param AbstractColumn $column
      */
-    public function __construct($data, $value, array $attributes = []) {
-        $this->setData($data);
-        $this->setValue($value);
+    public function __construct($value, $data, AbstractColumn $column) {
+        $this->value  = $value;
+        $this->data   = $data;
+        $this->column = $column;
+    }
 
-        foreach ($attributes as $name => $val) {
-            $this->addAttribute($name, $val);
-        }
+    /**
+     * @return mixed
+     */
+    public function getValue() {
+        return $this->value;
+    }
 
+    /**
+     * @param mixed $value
+     */
+    public function setValue($value) {
+        $this->value = $value;
     }
 
     /**
@@ -52,70 +64,16 @@ class Event {
     }
 
     /**
-     * @return mixed
+     * @return AbstractColumn
      */
-    public function getValue() {
-        return $this->value;
+    public function getColumn() {
+        return $this->column;
     }
 
     /**
-     * @param mixed $value
+     * @param AbstractColumn $column
      */
-    public function setValue($value) {
-        $this->value = $value;
-    }
-
-    public function clearAttributes() {
-        $this->attributes = [];
-    }
-
-    /**
-     * @param string $name
-     */
-    public function removeAttribute($name) {
-        if ($this->hasAttribute($name)) {
-            unset($this->attributes[$name]);
-        }
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function hasAttribute($name) {
-        return isset($this->attributes[$name]);
-    }
-
-    /**
-     * @param string $name
-     * @param mixed|null $default
-     * @return mixed
-     */
-    public function getAttribute($name, $default = null) {
-        return $this->hasAttribute($name) ? $this->attributes[$name] : $default;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAttributes() {
-        return $this->attributes;
-    }
-
-    /**
-     * @param string $name
-     * @param mixed $value
-     */
-    public function addAttribute($name, $value) {
-        $this->attributes[$name][] = $value;
-    }
-
-    /**
-     * @param string $name
-     * @param mixed $value
-     */
-    public function setAttribute($name, $value) {
-        $this->removeAttribute($name);
-        $this->addAttribute($name, $value);
+    public function setColumn(AbstractColumn $column) {
+        $this->column = $column;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid;
 
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\AbstractColumn;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Row;
 use Tutto\Bundle\DataGridBundle\Exceptions\HelperNotFoundException;
 use Tutto\Bundle\DataGridBundle\DataGrid\Helper\HelperInterface;
 
@@ -14,6 +16,44 @@ class DataGrid {
      * @var array
      */
     private $helpers = [];
+
+    /**
+     * @var Row[]
+     */
+    private $rows = [];
+
+    /**
+     * @var AbstractColumn[]
+     */
+    private $columns = [];
+
+    /**
+     * @param Row $row
+     */
+    public function addRow(Row $row) {
+        $this->rows[] = $row;
+    }
+
+    /**
+     * @return Row[]
+     */
+    public function getRows() {
+        return $this->rows;
+    }
+
+    /**
+     * @param AbstractColumn $column
+     */
+    public function addColumn(AbstractColumn $column) {
+        $this->columns[] = $column;
+    }
+
+    /**
+     * @return AbstractColumn[]
+     */
+    public function getColumns() {
+        return $this->columns;
+    }
 
     /**
      * @param string|HelperInterface $name

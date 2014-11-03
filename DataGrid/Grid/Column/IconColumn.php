@@ -2,13 +2,14 @@
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column;
 
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\RouteDecorator;
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\XhtmlTagDecorator;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Event;
 use Tutto\Bundle\UtilBundle\Logic\RouteDefinition;
+use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
+use Tutto\Bundle\XhtmlBundle\Xhtml\Tag;
 
 /**
  * Class IconColumn
- * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\IconsColumn
+ * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column
  */
 class IconColumn extends RouteColumn {
     /**
@@ -18,11 +19,14 @@ class IconColumn extends RouteColumn {
 
     /**
      * @param string $name
-     * @param array $options
      * @param RouteDefinition $routeDefinition
+     * @param array $options
      */
-    public function __construct($name = 'icon', array $options = [], RouteDefinition $routeDefinition = null) {
-        parent::__construct($name, $options, $routeDefinition);
+    public function __construct($name, RouteDefinition $routeDefinition = null, array $options = []) {
+        $options['propertyPath'] = false;
+        parent::__construct($name, $routeDefinition, $options);
+
+        $this->clearDecorators();
     }
 
     /**
@@ -40,13 +44,13 @@ class IconColumn extends RouteColumn {
     }
 
     /**
-     * @return RouteDecorator
+     * @param Event $event
+     * @return AbstractTag
      */
-    protected function initDecorator() {
-        $attributes = $this->getAttributes();
-        $decorator  = new XhtmlTagDecorator('i', ['class' => $this->getFa()]);
-        $decorator->addDecorator(new RouteDecorator($this->getRouteDefinition(), $attributes->all()));
+    public function decorate(Event $event) {
+        $xhtml = parent::decorate($event);
+        $xhtml->addChild(new Tag('i', ['class' => $this->getFa()]));
 
-        return $decorator;
+        return $xhtml;
     }
 }

@@ -10,34 +10,50 @@ use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
  * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid
  */
 class Cell {
-    protected $xhtml;
+    /**
+     * @var AbstractTag
+     */
+    private $xhtml;
 
-    protected $column;
+    /**
+     * @var AbstractColumn
+     */
+    private $column;
 
+    /**
+     * @param AbstractTag $xhtml
+     * @param AbstractColumn $column
+     */
     public function __construct(AbstractTag $xhtml, AbstractColumn $column) {
         $this->xhtml = $xhtml;
         $this->column = $column;
     }
 
     /**
-     * @return mixed
+     * @return AbstractTag
+     */
+    public function getXhtml() {
+        return $this->xhtml;
+    }
+
+    /**
+     * @param AbstractTag $xhtml
+     */
+    public function setXhtml($xhtml) {
+        $this->xhtml = $xhtml;
+    }
+
+    /**
+     * @return AbstractColumn
      */
     public function getColumn() {
         return $this->column;
     }
 
     /**
-     * @param mixed $column
+     * @param AbstractColumn $column
      */
     public function setColumn($column) {
         $this->column = $column;
-    }
-
-    public function getXhtml() {
-        return $this->xhtml;
-    }
-
-    public function setXhtml(AbstractTag $tag) {
-        $this->xhtml = $tag;
     }
 }

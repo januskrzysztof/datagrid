@@ -5,10 +5,8 @@ namespace Tutto\Bundle\DataGridBundle\DataGrid;
 use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Bundle\TwigBundle\Debug\TimedTwigEngine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Dump\Container;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
-
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\PropertyAccess\Exception\InvalidPropertyPathException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -16,20 +14,16 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Tutto\Bundle\DataGridBundle\DataGrid\DataProvider\DataProviderInterface;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Cell;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\AbstractColumn;
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\AbstractDecorator;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Decorator\AbstractDecorator;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Event;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder;
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridInterface;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Row;
 use Tutto\Bundle\DataGridBundle\DataGrid\Helper\FormHelper;
-use Tutto\Bundle\DataGridBundle\DataGrid\Helper\LabelsHelper;
 use Tutto\Bundle\DataGridBundle\DataGrid\Helper\PaginationHelper;
 use Tutto\Bundle\DataGridBundle\DataGrid\Helper\RouterHelper;
-use Tutto\Bundle\DataGridBundle\DataGrid\Helper\RowsHelper;
-use Tutto\Bundle\DataGridBundle\Exceptions\Decorator\DecoratorException;
-use Tutto\Bundle\UtilBundle\Logic\PropertyAccessor;
 use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\GridBuilderInterface;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\AbstractGridBuilder;
+
 use BadMethodCallException;
 
 /**
@@ -88,14 +82,14 @@ class DataGridFactory {
     }
 
     /**
-     * @param GridBuilderInterface $gridBuilder
+     * @param AbstractGridBuilder $gridBuilder
      * @param DataProviderInterface $dataProvider
      * @param AbstractFiltersType $filters
      * @param Request $request
      * @param bool $template
      * @return array
      */
-    public function createResponse(GridBuilderInterface $gridBuilder, DataProviderInterface $dataProvider, AbstractFiltersType $filters, Request $request = null, $template = false) {
+    public function createResponse(AbstractGridBuilder $gridBuilder, DataProviderInterface $dataProvider, AbstractFiltersType $filters, Request $request = null, $template = false) {
         /** Set request if not passed */
         if ($request === null) {
             $request = $this->container->get('request');
@@ -104,10 +98,11 @@ class DataGridFactory {
         /** @var Session $session */
         $session = $request->getSession();
 
-        /** @var AbstractColumn $column */
-        /** Set grid labels to helper */
+        $gridBuilder->setContainer($this->container);
+        $gridBuilder->build();
+
         foreach ($gridBuilder->getColumns() as $column) {
-            $this->dataGrid->columns->addColumn($column);
+            $this->dataGrid->addColumn($column);
         }
 
         $dataProvider->setLimit($request->get(self::LIMIT_NAME, 30));
@@ -138,15 +133,15 @@ class DataGridFactory {
             foreach ($dataProvider->getResult() as $result) {
                 $row = new Row();
                 foreach ($gridBuilder->getColumns() as $column) {
-                    /** Get value from reult by property path */
+                    /** Get value from results by property path */
                     $value = $this->getValue($this->propertyAccessor, $column, $result);
-                    $event = new Event($result, $value);
+                    $event = new Event($value, $result, $column);
 
                     $this->callPostAccessValueEvents($column, $event);
 
-                    $row->addCell(new Cell($this->decorate($column->getDecorator(), $event), $column));
+                    $row->addCell(new Cell($this->decorate($column, $event), $column));
                 }
-                $this->dataGrid->rows->addRow($row);
+                $this->dataGrid->addRow($row);
             }
         }
 
@@ -165,6 +160,21 @@ class DataGridFactory {
         ]);
     }
 
+    private function decorate(AbstractDecorator $decorator, Event $event) {
+        $xhtml = $decorator->decorate($event);
+        foreach ($decorator->getDecorators() as $subDecorator) {
+            if ($subDecorator->getPlacement() === AbstractDecorator::APPEND) {
+                $xhtml->addChild($this->decorate($subDecorator, $event));
+            } elseif($subDecorator->getPlacement() === AbstractDecorator::PREPEND) {
+                $tmp = $xhtml;
+                $xhtml = $this->decorate($subDecorator, $event);
+                $xhtml->addChild($tmp);
+            }
+        }
+
+        return $xhtml;
+    }
+
     /**
      * @param PropertyAccessorInterface $propertyAccessor
      * @param AbstractColumn $column
@@ -174,7 +184,7 @@ class DataGridFactory {
     private function getValue(PropertyAccessorInterface $propertyAccessor, AbstractColumn $column, $result) {
         $propertyPath = $column->getPropertyPath();
         if ($propertyPath === false) {
-            return $column->getStaticValue();
+            return null;
         } elseif ($propertyPath !== false && $propertyPath !== null) {
             return $propertyAccessor->getValue($result, $propertyPath);
         } else {
@@ -195,34 +205,5 @@ class DataGridFactory {
             }
         }
 
-    }
-
-    /**
-     * @param AbstractDecorator $decorator
-     * @param Event $event
-     * @return AbstractTag
-     */
-    private function decorate(AbstractDecorator $decorator, Event $event) {
-        $xhtml = $decorator->decorate($event);
-
-        if (!$xhtml instanceof AbstractTag) {
-            throw new DecoratorException(sprintf("'AbstractTag' was not returned from decorator: '%s'", get_class($decorator)));
-        }
-
-        /**
-         * @var string $placement
-         * @var AbstractDecorator $subDecorator
-         */
-        foreach ($decorator->getDecorators() as list($placement, $subDecorator)) {
-            if ($placement === AbstractDecorator::APPEND) {
-                $xhtml->addChild($this->decorate($subDecorator, $event));
-            } elseif ($placement === AbstractDecorator::PREPEND) {
-                $tmp = $xhtml;
-                $xhtml = $this->decorate($subDecorator, $event);
-                $xhtml->addChild($tmp);
-            }
-        }
-
-        return $xhtml;
     }
 }

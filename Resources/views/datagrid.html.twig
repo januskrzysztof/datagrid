@@ -13,22 +13,28 @@
     <table>
         <thead>
         <tr>
-        {% for column in datagrid.columns.getColumns() %}
+        {% for column in datagrid.getColumns() %}
             <th>
-                {% if column.isSortable() %}
-                    <a href="{{ datagrid.router.generate({"_sort": column.getSort()}) }}">{{ column.getLabel()|trans|raw }}</a>
-                {% else %}
-                    {{ column.getLabel()|trans|raw }}
+                {% if column.isVisible() %}
+                    {% if column.isSortable() %}
+                        <a href="{{ datagrid.router.generate({"_sort": column.getSort()}) }}">{{ column.getLabel()|trans|raw }}</a>
+                    {% else %}
+                        {{ column.getLabel()|trans|raw }}
+                    {% endif %}
                 {% endif %}
             </th>
         {% endfor %}
         </tr>
         </thead>
         <tbody>
-        {% for row in datagrid.rows.getRows() %}
+        {% for row in datagrid.getRows() %}
             <tr>
             {% for cell in row.getCells() %}
-                <td {{ cell.getColumn().getAttributes()|raw }}>{{ xhtmlRaw(cell.getXhtml()) }}</td>
+                <td {{ cell.getColumn().getAttributes()|raw }}>
+                    {% if cell.getColumn().isVisible() %}
+                    {{ xhtmlRaw(cell.getXhtml()) }}
+                    {% endif %}
+                </td>
             {% endfor %}
             </tr>
         {% endfor %}

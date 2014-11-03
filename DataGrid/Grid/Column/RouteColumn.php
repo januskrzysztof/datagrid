@@ -2,39 +2,43 @@
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column;
 
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\AbstractDecorator;
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\RouteDecorator;
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\Decorator\ValueDecorator;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Decorator\AbstractDecorator;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Decorator\RouteDecorator;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Decorator\ValueDecorator;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Event;
+use Tutto\Bundle\DataGridBundle\Exceptions\ColumnException;
 use Tutto\Bundle\UtilBundle\Logic\RouteDefinition;
+use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
 
 /**
  * Class RouteColumn
- * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column
+ * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid\Decorator\Column
  */
 class RouteColumn extends AbstractColumn {
     /**
-     * @var RouteDefinition
+     * @var RouteDefinition;
      */
     private $routeDefinition;
 
     /**
-     * @param string $name
-     * @param array $options
-     * @param RouteDefinition $routeDefinition
+     * @var RouteDecorator
      */
-    public function __construct($name, array $options = [], RouteDefinition $routeDefinition = null) {
-        parent::__construct($name, $options);
-        $this->routeDefinition = $routeDefinition;
-    }
+    private $decorator;
 
     /**
-     * @return RouteDecorator
+     * @param string $name
+     * @param RouteDefinition $routeDefinition
+     * @param array $options
+     * @throws ColumnException
      */
-    protected function initDecorator() {
-        $decorator = new RouteDecorator($this->getRouteDefinition());
-        $decorator->addDecorator(new ValueDecorator(), AbstractDecorator::APPEND);
+    public function __construct($name, RouteDefinition $routeDefinition = null, array $options = []) {
+        parent::__construct($name, $options);
+        $this->decorator = new RouteDecorator();
+        $this->addDecorator(new ValueDecorator());
 
-        return $decorator;
+        if ($routeDefinition !== null) {
+            $this->setRouteDefinition($routeDefinition);
+        }
     }
 
     /**
@@ -49,5 +53,15 @@ class RouteColumn extends AbstractColumn {
      */
     public function setRouteDefinition(RouteDefinition $routeDefinition) {
         $this->routeDefinition = $routeDefinition;
+    }
+
+    /**
+     * @param Event $event
+     * @return AbstractTag
+     */
+    public function decorate(Event $event) {
+        $this->decorator->setRouteDefinition($this->getRouteDefinition());
+
+        return $this->decorator->decorate($event);
     }
 }

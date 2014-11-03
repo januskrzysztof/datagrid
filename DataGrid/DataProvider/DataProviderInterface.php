@@ -13,7 +13,6 @@ interface DataProviderInterface extends Countable {
     const ASC  = 'asc';
     const SORT = 'id';
 
-
     /**
      * @return array
      */
