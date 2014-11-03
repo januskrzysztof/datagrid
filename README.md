@@ -17,6 +17,7 @@ following to your `composer.json` file:
     }
 
 In AppKernel.php file add this:
+
     <?php
     // in AppKernel::registerBundles()
     $bundles = array(
