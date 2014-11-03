@@ -10,7 +10,8 @@
     "email": "fluke.kuczwa@gmail.com"
   }],
   "require": {
-    "tutto/xhtml-bundle": "dev-master"
+    "tutto/util-bundle": "1.0.*@dev",
+    "tutto/xhtml-bundle": "1.0.*@dev"
   },
   "repositories": [
     {
