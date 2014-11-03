@@ -16,13 +16,13 @@ following to your `composer.json` file:
         }
     }
 
-
+In AppKernel.php file add this:
     <?php
-
     // in AppKernel::registerBundles()
     $bundles = array(
         // ...
-        new JMS\DiExtraBundle\JMSDiExtraBundle($this),
-        new JMS\AopBundle\JMSAopBundle(),
+        new Tutto\Bundle\DataGridBundle\TuttoDataGridBundle(),
+        new Tutto\Bundle\XhtmlBundle\TuttoXhtmlBundle(),
+        new \Tutto\Bundle\UtilBundle\TuttoUtilBundle()
         // ...
     );
