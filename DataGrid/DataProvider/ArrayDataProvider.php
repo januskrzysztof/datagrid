@@ -28,7 +28,12 @@ class ArrayDataProvider extends AbstractDataProvider {
         $result = array_slice($this->result, $offset, $limit);
 
         uasort($result, function ($a, $b) {
-            return strnatcmp($a[$this->getSort()], $b[$this->getSort()]);
+            $sort = $this->getSort();
+            if ($this->getOrder() === self::ASC) {
+                return strnatcmp($a[$sort], $b[$sort]);
+            } else {
+                return strnatcmp($b[$sort], $a[$sort]);
+            }
         });
 
         return $result;

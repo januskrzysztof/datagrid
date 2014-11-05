@@ -5,7 +5,9 @@
 {% endblock %}
 
 {% block datagrid_body %}
-    <form method="post" action="{{ datagrid.router.generate({"_page": 1}) }}">
+    {% set route_name = app.request.get('_route') %}
+    {% set route_params = app.request.get('_route_params') %}
+    <form method="post" action="{{ path(route_name, route_params|merge({'_page': 1})) }}">
         {{ form_row(datagrid.form) }}
         <button class="btn">{{ "datagrid.search"|trans }}</button>
     </form>

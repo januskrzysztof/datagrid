@@ -53,7 +53,8 @@ class PaginationHelper implements HelperInterface {
      * @return int
      */
     public function getPages() {
-        return (int) ceil($this->count()/$this->getLimit());
+        $pages = (int) ceil($this->count()/$this->getLimit());
+        return $pages < 1 ? 1 : $pages;
     }
 
     /**
