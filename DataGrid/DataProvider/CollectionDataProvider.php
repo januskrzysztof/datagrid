@@ -55,7 +55,7 @@ class CollectionDataProvider extends AbstractDataProvider {
     public function getResult() {
         $limit  = $this->getLimit();
         $offset = ($this->getPage()-1)*$limit;
-        $result = $this->collection->slice($offset, $limit);
+        $result = $this->collection->toArray();
 
         uasort($result, function ($a, $b) {
             $sort = $this->getSort();
@@ -68,7 +68,7 @@ class CollectionDataProvider extends AbstractDataProvider {
             }
         });
 
-        return $result;
+        return array_slice($result, $offset, $limit);
     }
 
     /**

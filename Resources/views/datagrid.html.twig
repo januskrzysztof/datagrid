@@ -69,15 +69,28 @@
         <tr>
             {% for cell in row.getCells() %}
                 <td {{ cell.getColumn().getAttributes()|raw }}>
-                    {% if cell.getColumn().isVisible() %}
-                        {{ xhtmlRaw(cell.getXhtml()) }}
-                    {% endif %}
+                    {{ block('datagrid_table_single_result') }}
                 </td>
             {% endfor %}
         </tr>
     {% endfor %}
 {% endblock datagrid_table_results %}
 {# end: Build rows with results (columns) #}
+
+{# start: Build single results #}
+{% block datagrid_table_single_result %}
+    {% set col = cell.getColumn() %}
+
+    {% if col.isVisible() %}
+        {% set xhtml = xhtmlRaw(cell.getXhtml()) %}
+        {% if col.isTranslate() %}
+            {{ xhtml|trans(col.getTranslationParams, col.getTranslationDomain())|raw }}
+        {% else %}
+            {{ xhtml|raw }}
+        {% endif %}
+    {% endif %}
+{% endblock datagrid_table_single_result %}
+{# end: Build single results #}
 
 {# start: Build rows with labels #}
 {% block datagrid_table_labels %}

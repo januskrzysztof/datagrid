@@ -45,12 +45,27 @@ abstract class AbstractColumn extends AbstractDecorator {
     private $isVisible = true;
 
     /**
+     * @var bool
+     */
+    private $translate = false;
+
+    /**
+     * @var string
+     */
+    private $translationDomain = 'messages';
+
+    /**
+     * @var array
+     */
+    private $translationParams = [];
+
+    /**
      * @var array
      */
     private $postAccessValueEvents = [];
 
     /**
-     * @var
+     * @var Attributes
      */
     private $attributes;
 
@@ -129,6 +144,52 @@ abstract class AbstractColumn extends AbstractDecorator {
      */
     public function setPropertyPath($propertyPath) {
         $this->propertyPath = $propertyPath;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isTranslate() {
+        return $this->translate;
+    }
+
+    /**
+     * @param boolean $translate
+     * @param string $domain
+     * @param array $params
+     */
+    public function setTranslate($translate, $domain = 'messages', array $params = []) {
+        $this->translate = (boolean) $translate;
+        $this->setTranslationDomain($domain);
+        $this->setTranslationParams($params);
+    }
+
+    /**
+     * @return string
+     */
+    public function getTranslationDomain() {
+        return $this->translationDomain;
+    }
+
+    /**
+     * @param string $translationDomain
+     */
+    public function setTranslationDomain($translationDomain) {
+        $this->translationDomain = (string) $translationDomain;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTranslationParams() {
+        return $this->translationParams;
+    }
+
+    /**
+     * @param array $translationParams
+     */
+    public function setTranslationParams(array $translationParams) {
+        $this->translationParams = $translationParams;
     }
 
     /**
