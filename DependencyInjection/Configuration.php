@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('template')
-                    ->defaultValue('@TuttoDataGrid/datagrid.html.twig')
+                    ->defaultValue('@TuttoDataGrid/template.html.twig')
                     ->end()
             ->end();
 

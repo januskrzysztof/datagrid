@@ -1,53 +1,83 @@
-{% extends '::base.html.twig' %}
-
-{% block body %}
-    {{ block('datagrid_body') }}
-{% endblock %}
-
+{# start: Main datagrid body #}
 {% block datagrid_body %}
     {% set route_name = app.request.get('_route') %}
     {% set route_params = app.request.get('_route_params') %}
-    <form method="post" action="{{ path(route_name, route_params|merge({'_page': 1})) }}">
-        {{ form_row(datagrid.form) }}
-        <button class="btn">{{ "datagrid.search"|trans }}</button>
-    </form>
 
-    <table>
-        <thead>
-        <tr>
-        {% for column in datagrid.getColumns() %}
-            <th>
-                {% if column.isVisible() %}
-                    {% if column.isSortable() %}
-                        <a href="{{ datagrid.router.generate({"_sort": column.getSort()}) }}">{{ column.getLabel()|trans|raw }}</a>
-                    {% else %}
-                        {{ column.getLabel()|trans|raw }}
-                    {% endif %}
-                {% endif %}
-            </th>
-        {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for row in datagrid.getRows() %}
-            <tr>
-            {% for cell in row.getCells() %}
-                <td {{ cell.getColumn().getAttributes()|raw }}>
-                    {% if cell.getColumn().isVisible() %}
-                    {{ xhtmlRaw(cell.getXhtml()) }}
-                    {% endif %}
-                </td>
-            {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {{ block('datagrid_filters_type') }}
+    {{ block('datagrid_table') }}
 
     {% set from = (datagrid.pagination.getPage()-1)*datagrid.pagination.getLimit() %}
     {% set from = from < 1 ? 1 : from+1 %}
     {% set to   = from+datagrid.pagination.getLimit()-1 %}
 
-    {{ "datagrid.show_result"|trans({"%from%": from, "%to%": to, "%count%": datagrid.pagination.count()}) }}
-
-    {% include '@TuttoDataGrid/pagination.html.twig' with {'pagination': datagrid.pagination, 'router': datagrid.router} %}
+    <p>{{ block('datagrid_result_info') }}</p>
+    {{ block('datagrid_pagination') }}
 {% endblock datagrid_body %}
+{# end: Main datagrid body #}
+
+{# start: datagrid_pagination #}
+{% block datagrid_pagination %}
+    {% include '@TuttoDataGrid/pagination.html.twig' with {'pagination': datagrid.pagination, 'router': datagrid.router} %}
+{% endblock datagrid_pagination %}
+{# start: datagrid_pagination #}
+
+{# start: Datagrid results info (f.e: Show 1 of 30 rekords) #}
+{% block datagrid_result_info %}
+    {{ "datagrid.show_result"|trans({"%from%": from, "%to%": to, "%count%": datagrid.pagination.count()}) }}
+{% endblock datagrid_result_info %}
+{# end: Datagrid results info (f.e: Show 1 of 30 rekords) #}
+
+{# start: Datagrid filters type (Form to search results) #}
+{% block datagrid_filters_type %}
+    <form method="post" action="{{ path(route_name, route_params|merge({'_page': 1})) }}">
+        {{ form_row(datagrid.form) }}
+        <button class="btn">{{ "datagrid.search"|trans }}</button>
+    </form>
+{% endblock datagrid_filters_type %}
+{# end: Datagrid filters type (Form to search results) #}
+
+{# start: Build table with contents #}
+{% block datagrid_table %}
+    <table class="{{ datagrid.getGridBuilder().getAttributes().getClass() }}">
+        <thead>
+        <tr>{{ block('datagrid_table_labels') }}</tr>
+        </thead>
+        <tbody>{{ block('datagrid_table_results') }}</tbody>
+        <tfoot>
+        <tr>{{ block('datagrid_table_labels') }}</tr>
+        </tfoot>
+    </table>
+{% endblock datagrid_table %}
+{# end: Build table with contents #}
+
+{# start: Build rows with results (columns) #}
+{% block datagrid_table_results %}
+    {% for row in datagrid.getRows() %}
+        <tr>
+            {% for cell in row.getCells() %}
+                <td {{ cell.getColumn().getAttributes()|raw }}>
+                    {% if cell.getColumn().isVisible() %}
+                        {{ xhtmlRaw(cell.getXhtml()) }}
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+{% endblock datagrid_table_results %}
+{# end: Build rows with results (columns) #}
+
+{# start: Build rows with labels #}
+{% block datagrid_table_labels %}
+    {% for column in datagrid.getColumns() %}
+        <th>
+            {% if column.isVisible() %}
+                {% if column.isSortable() %}
+                    <a href="{{ datagrid.router.generate({"_sort": column.getSort()}) }}">{{ column.getLabel()|trans|raw }}</a>
+                {% else %}
+                    {{ column.getLabel()|trans|raw }}
+                {% endif %}
+            {% endif %}
+        </th>
+    {% endfor %}
+{% endblock datagrid_table_labels %}
+{# end: Build rows with labels #}

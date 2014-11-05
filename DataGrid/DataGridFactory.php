@@ -149,6 +149,7 @@ class DataGridFactory {
         $this->dataGrid->addHelper(new PaginationHelper($dataProvider));
         $this->dataGrid->addHelper(new RouterHelper($this->container->get('router'), $request));
         $this->dataGrid->addHelper(new FormHelper($form));
+        $this->dataGrid->setGridBuilder($gridBuilder);
 
         if ($template === false) {
             $template = $this->config['template'];
