@@ -4,7 +4,7 @@ namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\AbstractColumn;
-use Tutto\Bundle\XhtmlBundle\Xhtml\Attributes;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\Attributes;
 use Tutto\Bundle\UtilBundle\Logic\Attributes as BaseAttributes;
 
 /**
@@ -59,7 +59,6 @@ abstract class AbstractGridBuilder {
     public function setAttributes($attributes) {
         if (is_array($attributes)) {
             $attributes = new Attributes($attributes);
-        } elseif ($attributes instanceof Attributes) {
         } elseif ($attributes instanceof BaseAttributes) {
             $attributes = new Attributes($attributes->getAttributes());
         } else {

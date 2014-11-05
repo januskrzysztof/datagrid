@@ -21,7 +21,7 @@ use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Row;
 use Tutto\Bundle\DataGridBundle\DataGrid\Helper\FormHelper;
 use Tutto\Bundle\DataGridBundle\DataGrid\Helper\PaginationHelper;
 use Tutto\Bundle\DataGridBundle\DataGrid\Helper\RouterHelper;
-use Tutto\Bundle\XhtmlBundle\Xhtml\AbstractTag;
+use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\Attributes;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\AbstractGridBuilder;
 
 use BadMethodCallException;
@@ -116,20 +116,30 @@ class DataGridFactory {
             $data = null;
         }
 
+        $showResultsMode = $gridBuilder->getAttributes()->getShowResultsMode();
+
         /** Set filter data from $_POST or if exists from $_SESSION */
         $form = $this->formFactory->create($filters, $data);
         if ($request->isMethod('post')) {
             if ($form->handleRequest($request)->isValid()) {
-                $session->set($filters->getName(), $form->getData());
+                if ($form->get('_clear')->isClicked()) {
+                    $session->remove($filters->getName());
+                    $form = $this->formFactory->create($filters, $data);
+                } else {
+                    $showResultsMode = Attributes::SHOW_RESULTS_MODE_ALWAYS;
+                    $session->set($filters->getName(), $form->getData());
+                }
             } else {
                 /* todo dodać flashbag messages jeśli formularz nie jest poprawny. */
             }
+        } elseif ($session->has($filters->getName())) {
+            $showResultsMode = Attributes::SHOW_RESULTS_MODE_ALWAYS;
         }
 
         $dataProvider->setFilterData($form->getData());
 
         /** Prepare results */
-        if ($dataProvider->count() > 0) {
+        if ($dataProvider->count() > 0 && $showResultsMode === Attributes::SHOW_RESULTS_MODE_ALWAYS) {
             foreach ($dataProvider->getResult() as $result) {
                 $row = new Row();
                 foreach ($gridBuilder->getColumns() as $column) {

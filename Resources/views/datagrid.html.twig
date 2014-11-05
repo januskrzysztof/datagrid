@@ -2,15 +2,22 @@
 {% block datagrid_body %}
     {% set route_name = app.request.get('_route') %}
     {% set route_params = app.request.get('_route_params') %}
+    {% set attributes = datagrid.getGridBuilder().getAttributes() %}
 
+    {% if attributes.isVisibleFiltersType() %}
     {{ block('datagrid_filters_type') }}
+    {% endif %}
+
     {{ block('datagrid_table') }}
 
     {% set from = (datagrid.pagination.getPage()-1)*datagrid.pagination.getLimit() %}
     {% set from = from < 1 ? 1 : from+1 %}
     {% set to   = from+datagrid.pagination.getLimit()-1 %}
 
+    {% if attributes.isVisibleResultsInfo() %}
     <p>{{ block('datagrid_result_info') }}</p>
+    {% endif %}
+
     {{ block('datagrid_pagination') }}
 {% endblock datagrid_body %}
 {# end: Main datagrid body #}
@@ -31,21 +38,27 @@
 {% block datagrid_filters_type %}
     <form method="post" action="{{ path(route_name, route_params|merge({'_page': 1})) }}">
         {{ form_row(datagrid.form) }}
-        <button class="btn">{{ "datagrid.search"|trans }}</button>
     </form>
 {% endblock datagrid_filters_type %}
 {# end: Datagrid filters type (Form to search results) #}
 
 {# start: Build table with contents #}
 {% block datagrid_table %}
+    {% set labels_mode = attributes.getTableLabelsMode() %}
+    {% set show_labels = attributes.isVisibleTableLabels() %}
+
     <table class="{{ datagrid.getGridBuilder().getAttributes().getClass() }}">
+        {% if show_labels and (labels_mode == 1 or labels_mode == 3) %}
         <thead>
         <tr>{{ block('datagrid_table_labels') }}</tr>
         </thead>
+        {% endif %}
         <tbody>{{ block('datagrid_table_results') }}</tbody>
+        {% if show_labels and (labels_mode == 2 or labels_mode == 3) %}
         <tfoot>
         <tr>{{ block('datagrid_table_labels') }}</tr>
         </tfoot>
+        {% endif %}
     </table>
 {% endblock datagrid_table %}
 {# end: Build table with contents #}

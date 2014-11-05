@@ -3,6 +3,7 @@
 namespace Tutto\Bundle\DataGridBundle\DataGrid;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
@@ -10,6 +11,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
  * @package Tutto\Bundle\DataGridBundle\DataGrid
  */
 abstract class AbstractFiltersType extends AbstractType {
+    public function buildForm(FormBuilderInterface $builder, array $options) {
+        $builder->add('_submit', 'submit');
+        $builder->add('_clear', 'submit');
+    }
+
     /**
      * @param OptionsResolverInterface $resolver
      */
