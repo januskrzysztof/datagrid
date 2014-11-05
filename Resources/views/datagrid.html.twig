@@ -47,7 +47,7 @@
     {% set labels_mode = attributes.getTableLabelsMode() %}
     {% set show_labels = attributes.isVisibleTableLabels() %}
 
-    <table class="{{ datagrid.getGridBuilder().getAttributes().getClass() }}">
+    <table class="{{ datagrid.getGridBuilder().getAttributes().getClass()|join(' ') }}">
         {% if show_labels and (labels_mode == 1 or labels_mode == 3) %}
         <thead>
         <tr>{{ block('datagrid_table_labels') }}</tr>
