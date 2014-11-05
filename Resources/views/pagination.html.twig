@@ -7,7 +7,7 @@
 <ul class="pagination">
     <li class="prev {{ pagination.getPrevious() == pagination.getPage() ? 'disabled' : '' }}">
         <a href="{{ path(route_name, route_params|merge({'_page': pagination.getPrevious()})) }}">
-            <i class="fa fa-chevron-left">prev</i>
+            <i class="fa fa-chevron-left"></i>
         </a>
     </li>
 
@@ -19,7 +19,7 @@
 
     <li class="next {{ pagination.getNext() == pagination.getPage() ? 'disabled' : '' }}">
         <a href="{{ path(route_name, route_params|merge({'_page': pagination.getNext()})) }}">
-            <i class="fa fa-chevron-right">next</i>
+            <i class="fa fa-chevron-right"></i>
         </a>
     </li>
 </ul>
