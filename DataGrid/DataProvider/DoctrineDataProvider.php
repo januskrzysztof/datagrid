@@ -18,7 +18,7 @@ class DoctrineDataProvider extends AbstractDataProvider {
     /**
      * @var EntityRepository
      */
-    private $repository;
+    protected $repository;
 
     /**
      * @var Paginator
@@ -40,10 +40,12 @@ class DoctrineDataProvider extends AbstractDataProvider {
     }
 
     /**
-     * @return void
+     * @return QueryBuilder
      */
     public function initQueryBuilder() {
-        $this->queryBuilder = $this->repository->createQueryBuilder('root')->addOrderBy($this->getSort(), $this->getOrder());
+        return $this->queryBuilder = $this->repository
+            ->createQueryBuilder(self::ROOT)
+            ->addOrderBy($this->getSort(), $this->getOrder());
     }
 
     /**

@@ -144,6 +144,7 @@ abstract class AbstractColumn extends AbstractDecorator {
      */
     public function setPropertyPath($propertyPath) {
         $this->propertyPath = $propertyPath;
+        $this->setSort($propertyPath);
     }
 
     /**
@@ -233,11 +234,14 @@ abstract class AbstractColumn extends AbstractDecorator {
      */
     public function setIsSortable($sortable = false, $sort = null) {
         $this->isSortable = (boolean) $sortable;
-        $this->setSort($sort);
+
+        if ($sort !== null) {
+            $this->setSort($sort);
+        }
     }
 
     /**
-     * @return mixed
+     * @return Attributes
      */
     public function getAttributes() {
         return $this->attributes;

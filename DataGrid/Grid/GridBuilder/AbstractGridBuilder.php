@@ -2,16 +2,16 @@
 
 namespace Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tutto\Bundle\DataGridBundle\DataGrid\Grid\Column\AbstractColumn;
-use Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder\Attributes;
 use Tutto\Bundle\UtilBundle\Logic\Attributes as BaseAttributes;
 
 /**
  * Class AbstractBuilder
  * @package Tutto\Bundle\DataGridBundle\DataGrid\Grid\GridBuilder
  */
-abstract class AbstractGridBuilder {
+abstract class AbstractGridBuilder implements ContainerAwareInterface {
     /**
      * @var AbstractColumn[]
      */

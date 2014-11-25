@@ -1,8 +1,8 @@
 {# start: Main datagrid body #}
 {% block datagrid_body %}
-    {% set route_name = app.request.get('_route') %}
+    {% set route_name   = app.request.get('_route') %}
     {% set route_params = app.request.get('_route_params') %}
-    {% set attributes = datagrid.getGridBuilder().getAttributes() %}
+    {% set attributes   = datagrid.getGridBuilder().getAttributes() %}
 
     {% if attributes.isVisibleFiltersType() %}
     {{ block('datagrid_filters_type') }}
@@ -37,7 +37,7 @@
 {# start: Datagrid filters type (Form to search results) #}
 {% block datagrid_filters_type %}
     <form method="post" action="{{ path(route_name, route_params|merge({'_page': 1})) }}">
-        {{ form_row(datagrid.form) }}
+        {{ form_widget(datagrid.form) }}
     </form>
 {% endblock datagrid_filters_type %}
 {# end: Datagrid filters type (Form to search results) #}
@@ -95,12 +95,14 @@
 {# start: Build rows with labels #}
 {% block datagrid_table_labels %}
     {% for column in datagrid.getColumns() %}
-        <th>
+        <th {{ column.getAttributes()|raw }}>
             {% if column.isVisible() %}
                 {% if column.isSortable() %}
-                    <a href="{{ datagrid.router.generate({"_sort": column.getSort()}) }}">{{ column.getLabel()|trans|raw }}</a>
+                    <a href="{{ datagrid.router.generate({"_sort": column.getSort()}) }}">
+                        {{ column.getLabel()|trans({}, column.translationDomain)|raw }}
+                    </a>
                 {% else %}
-                    {{ column.getLabel()|trans|raw }}
+                    {{ column.getLabel()|trans({}, column.translationDomain)|raw }}
                 {% endif %}
             {% endif %}
         </th>

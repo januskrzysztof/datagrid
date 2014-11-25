@@ -139,7 +139,7 @@ class DataGridFactory {
         $dataProvider->setFilterData($form->getData());
 
         /** Prepare results */
-        if ($dataProvider->count() > 0 && $showResultsMode === Attributes::SHOW_RESULTS_MODE_ALWAYS) {
+        if ($showResultsMode === Attributes::SHOW_RESULTS_MODE_ALWAYS) {
             foreach ($dataProvider->getResult() as $result) {
                 $row = new Row();
                 foreach ($gridBuilder->getColumns() as $column) {
@@ -169,6 +169,16 @@ class DataGridFactory {
             'datagrid' => $this->dataGrid,
             'request'  => $request
         ]);
+    }
+
+    public function createResponseForObjectBuilder(ObjectsBuilderInterface $builder, Request $request = null, $template = null) {
+        return $this->createResponse(
+            $builder->getGridBuilder(),
+            $builder->getDataProvider(),
+            $builder->getFiltersType(),
+            $request,
+            $template
+        );
     }
 
     private function decorate(AbstractDecorator $decorator, Event $event) {
